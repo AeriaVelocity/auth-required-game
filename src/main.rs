@@ -4,6 +4,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // Hide console window on Windows in release mode
 
 use eframe::egui;
+use eframe::egui::Key;
+use eframe::egui::FontId;
+use eframe::egui::FontFamily::Monospace;
+use eframe::egui::TextStyle::*;
+use eframe::egui::Visuals;
+use eframe::egui::Color32;
 
 fn main() -> eframe::Result {
     env_logger::init();
@@ -18,6 +24,21 @@ fn main() -> eframe::Result {
         options,
         Box::new(|cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);
+            let mut style = (*cc.egui_ctx.style()).clone();
+
+            style.text_styles = [
+                (Heading, FontId::new(16.0, Monospace)),
+                (Body, FontId::new(14.0, Monospace)),
+                (Small, FontId::new(10.0, Monospace)),
+            ].into();
+
+            style.visuals = Visuals {
+                window_fill: Color32::from_rgb(0, 0, 0),
+                override_text_color: Some(Color32::from_rgb(255, 255, 255)),
+                ..Default::default()
+            };
+
+            cc.egui_ctx.set_style(style);
 
             Ok(Box::<Game>::default())
         }),
@@ -44,6 +65,8 @@ impl eframe::App for Game {
             ui.heading("Authorisation Required");
 
             // Terminal-like UI
+            // Okay, well, not really, eframe makes it look like an ordinary app
+            // It doesn't really look like a terminal at all XD
             ui.group(|ui| {
                 for line in &self.output {
                     ui.label(line);
@@ -51,8 +74,11 @@ impl eframe::App for Game {
 
                 ui.horizontal(|ui| {
                     ui.label("authreq-sh$ ");
-                    ui.text_edit_singleline(&mut self.input);
-                    // TODO Implement the `Enter` key later
+                    let response = ui.text_edit_singleline(&mut self.input);
+                    if ui.input(|i| i.key_pressed(Key::Enter)) {
+                        self.handle_input();
+                    }
+                    response.request_focus();
                 });
             });
         });
