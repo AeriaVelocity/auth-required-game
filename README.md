@@ -10,8 +10,9 @@ Unix/Linux system, written in Rust using the `egui` library.
 
 ### Priority
 
-- [ ] Implement a simple terminal interface with `egui`
-- [ ] Make it work on Linux first and foremost
+- [X] Implement a simple interface with `egui` and `eframe`.
+- [ ] Handle terminal input and commands
+- [X] Make it work on Linux first and foremost
 - [ ] Then make it work on Windows
 - [ ] Make it look like a Unix/Linux system
 - [ ] Include a proper Unix-like structure
